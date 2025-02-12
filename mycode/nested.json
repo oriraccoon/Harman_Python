@@ -1,0 +1,9 @@
+{
+    "employee": {
+        "name": "Eve",
+        "contact": {
+            "email": "eve@example.com",
+            "phone": "123-4567"
+        }
+    }
+}
