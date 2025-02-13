@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!--
+        form 태그 사용시 반드시 확인해야할 3가지
+        1. action -> 어디로??
+        2. method -> 어떤 방식으로??
+            1) GET : URL에 쿼리스트링(?)으로 key-value
+            2) POST : body안에 data가 숨겨져서 이동!! key-value
+        3. submit -> 언제?
+    -->
+    <form action="exan10.html" method="get">
+        <!-- 사용자가 text 입력할 수 있는 태그 대박박 -->
+        <table>
+            <tr>
+                <td>ID  :
+                </td>
+                <td><input type="text" placeholder="ID를 입력하세요" name="ID"><br/></td>
+            </tr>
+            <tr>
+                <td>PW  :</td>
+                <td><input type="password" placeholder="PW를 입력하세요" name="PW"><br/></td>
+            </tr>
+            <tr>
+                <td>EM  :</td>  
+                <td><input type="email" placeholder="이메일을 입력하세요" name="EM"><br/></td>
+            </tr>
+            <tr>
+                <td>DA  :</td>
+                <td><input type="date" name="DA"><br/></td>
+            </tr>
+            <tr>
+                <td>PN  :</td>
+                <td><input type="tel"></td>
+            </tr>
+        
+        </table>
+
+        <select name="menu">
+            <option value="">오늘의 점심은</option>
+            <option value="알밥">알밥</option>
+            <option value="스시">스시</option>
+        </select>
+        <br/>
+        좋아하는 메뉴는?? <br/>
+        <input type="checkbox" name="food" value="한식">한식<br/>
+        <input type="checkbox" name="food" value="중식">중식<br/>
+        <input type="checkbox" name="food" value="일식">일식<br/>
+        <input type="checkbox" name="food" value="양식">양식<br/>
+        <input type="checkbox" name="food" value="분식">분식<br/>
+        <br/>
+        MBTI를 선택해주세요<br/>
+        E<input type="radio" name="EI" value="E">
+        I<input type="radio" name="EI" value="I">
+        <br/>
+        N<input type="radio" name="NS" value="N">
+        S<input type="radio" name="NS" value="S">
+        <br/>
+        F<input type="radio" name="FT" value="F">
+        T<input type="radio" name="FT" value="T">
+        <br/>
+        P<input type="radio" name="PJ" value="P">
+        J<input type="radio" name="PJ" value="J">
+        <br/>
+
+        <input type="color"><br/>
+        <input type="file"><br/>
+        <input type="range"><br/>
+        <input type="reset"><br/>
+        <input type="time"><br/>
+        <input type="url"><br/>
+        
+
+
+        <input type="submit" value="전송">
+        
+        
+    </form>
+
+</body>
+</html>

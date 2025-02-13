@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 가중치에 따라 결정 */
+        /* 100 + 10 + 1 */
+        #box .my_color span{
+            color: red;
+        }
+        /* 100 + 1 + 1 
+           금 은 동 메달같은 느낌
+           !important -> 가중치 무시, 우선 적용*/
+        #box p span{
+            color: yellowgreen !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <p class="my_color">
+            <span>Hello World!</span>
+        </p>
+    </div>
+</body>
+</html>

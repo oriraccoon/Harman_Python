@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 1. 전체 선택자 -> "*" */
+        *{
+            color: green;
+        }
+        /* 2. 태그타입 선택자 -> "타입명" */
+        li,p{
+            color: yellow;
+        }
+        p{
+            color: blue;
+        }
+        /* 3. 클래스 선택자 -> ".클래스명" */
+        .harman{
+            color: red;
+        }
+        /* 4. 아이디 선택자 -> "#아이디명" */
+        #semicon{
+            color: pink;
+        }
+        /* 5. 계층 선택자 -> " , >, +, ~" */
+        /*   1) 자손 선택자 -> " "  */
+        div span{
+            color: blueviolet;
+        }
+        div li{
+            color: cyan;
+        }
+        /*   2) 자식 선택자 -> ">"  */
+        div>strong{
+            color: greenyellow;
+        }
+        ol>span{
+            color: brown;
+        }
+        /*   3) 근접 후행 선택자 -> "+"  */
+        div li+li{
+            color: cadetblue;
+        }
+        /*   4) 후행 선택자 -> "~"  */
+        div li~li{
+            color: indianred;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS</h1>
+    <p>웹페이지를 꾸며주는 스타일 시트 언어</p>
+    <ul>
+        <li>CSS 기본구조</li>
+        <li style="color: red;">CSS 선택자</li>
+        <li>CSS 스타일</li>
+    </ul>
+
+    <p class="harman">harman semicon academy</p>
+    <p id="semicon">kimjihwan</p>
+
+    <div>
+        <strong>Harman academy rules</strong>
+        <ol>
+            <li>dont late</li>
+            <li>dont absent</li>
+            <span>(tell pro)</span>
+            <li>study</li>
+        </ol>
+    </div>
+
+</body>
+</html>
