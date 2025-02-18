@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <!-- safe : to_html() 등으로
+         html태그 형식으로 넘어오지만
+         이걸 문자열 취급!!
+         safe필터를 걸게 되면 그대로 랜더링!!
+         -->
+        <center>{{dataframe | safe}}</center>
+    </div>
+    <center><button type="button" onclick="history.back()">back</button></center>
+    
+</body>
+</html>
