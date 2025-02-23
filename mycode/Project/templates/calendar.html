@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>공연 예매 달력 관리 시스템</title>
+    <style>
+        /* 기존 스타일 유지 */
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .calendar {
+            flex: 3;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th, 
+        .calendar-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+            height: 100px;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .date-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .event-badge {
+            background: #2196F3;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin: 2px 0;
+            text-align: left;
+            cursor: pointer;
+            max-height: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .event-description {
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .event-description button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .sidebar {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .event-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        #yearList, #monthList {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        #yearList div, #monthList div {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #yearList div:hover, #monthList div:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calendar">
+            <div class="calendar-header" style="position: relative;">
+                <button onclick="changeMonth(-1)">◀</button>
+                <h2>
+                    <span id="currentYear" onclick="toggleYearList()" style="cursor: pointer;"></span>
+                    <span id="currentMonth" onclick="toggleMonthList()" style="cursor: pointer;"></span>
+                </h2>
+                <button onclick="changeMonth(1)">▶</button>
+
+                <div id="yearList"></div>
+                <div id="monthList"></div>
+            </div>
+
+            <table class="calendar-table" id="calendarTable">
+                <thead>
+                    <tr>
+                        <th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
+                    </tr>
+                </thead>
+                <tbody id="calendarBody"></tbody>
+            </table>
+        </div>
+
+        <div class="sidebar">
+            <h3>공연 목록 (최대 20개)</h3>
+            <div class="event-list" id="eventList"></div>
+
+            <div style="margin-top: 20px;">
+                <h4>새 공연 추가</h4>
+                <input type="text" id="eventType" placeholder="공연 종류">
+                <input type="text" id="eventName" placeholder="공연명">
+                <input type="date" id="eventDate">
+                <button onclick="addEvent()">추가</button>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h4>장르별 공연 필터</h4>
+                <select id="genreSelect" onchange="filterEventsByGenre()">
+                    <option value="">장르 선택</option>
+                    <option value="뮤지컬">뮤지컬</option>
+                    <option value="콘서트">콘서트</option>
+                    <option value="연극">연극</option>
+                    <option value="클래식">클래식</option>
+                </select>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h4>날짜별 공연 필터</h4>
+                <input type="date" id="dateSelect" onchange="filterEventsByDate()">
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button onclick="saveCheckState()">체크 상태 저장</button>
+                <button onclick="loadCheckState()">저장된 목록 불러오기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let events = [
+            { id: 1, type: '뮤지컬', name: '오페라의 유령', date: '2025-02-15', checked: false },
+            { id: 2, type: '콘서트', name: '아이유 월드투어', date: '2025-02-27', checked: false },
+            { id: 3, type: '연극', name: '햄릿', date: '2025-02-15', checked: false }
+        ];
+
+        let currentDate = new Date();
+        const MAX_EVENTS = 20;
+
+        function filterEventsByGenre() {
+            const genre = document.getElementById('genreSelect').value;
+            updateEventList(genre, null);
+        }
+
+        function filterEventsByDate() {
+            const selectedDate = document.getElementById('dateSelect').value;
+            updateEventList(null, selectedDate);
+        }
+
+        function updateEventList(genreFilter = null, dateFilter = null) {
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = events
+                .filter(event => {
+                    if (genreFilter && event.type !== genreFilter) return false;
+                    if (dateFilter && event.date !== dateFilter) return false;
+                    return true;
+                })
+                .map(event => `
+                    <div class="event-item">
+                        <label>
+                            <input type="checkbox" ${event.checked ? 'checked' : ''} onchange="toggleEvent(${event.id})">
+                            ${event.date} <${event.type}> ${event.name}
+                        </label>
+                        <button onclick="deleteEvent(${event.id})">삭제</button>
+                    </div>
+                `)
+                .join('');
+        }
+
+        function addEvent() {
+            const newEvent = {
+                id: Date.now(),
+                type: document.getElementById('eventType').value,
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                checked: false
+            };
+
+            if (!newEvent.type || !newEvent.name || !newEvent.date) {
+                alert('모든 필드를 입력해주세요');
+                return;
+            }
+
+            if (events.length >= MAX_EVENTS) {
+                alert('최대 20개까지 추가 가능합니다');
+                return;
+            }
+
+            events.push(newEvent);
+            updateEventList();
+            generateCalendar();
+            clearInputs();
+        }
+
+        function generateCalendar() {
+            const calendarBody = document.getElementById('calendarBody');
+            calendarBody.innerHTML = '';
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            document.getElementById('currentYear').textContent = `${year}년`;
+            document.getElementById('currentMonth').textContent = `${month + 1}월`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            let date = 1;
+
+            for (let i = 0; i < 6; i++) {
+                let row = '<tr>';
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDay) {
+                        row += '<td></td>';
+                    } else if (date > lastDate) {
+                        row += '<td></td>';
+                    } else {
+                        row += `<td class="calendar-day" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}">
+                                    <div class="date-number">${date}</div>
+                                </td>`;
+                        date++;
+                    }
+                }
+                row += '</tr>';
+                calendarBody.innerHTML += row;
+                if (date > lastDate) break;
+            }
+            renderEvents();
+        }
+
+        function renderEvents() {
+            document.querySelectorAll('.calendar-day').forEach(cell => {
+                const date = cell.dataset.date;
+                const dayEvents = events.filter(event => event.checked && event.date === date);
+
+                dayEvents.forEach(event => {
+                    const badge = document.createElement('div');
+                    badge.className = 'event-badge';
+                    badge.textContent = `${event.type} - ${event.name}`;
+                    badge.onclick = function() {
+                        
+                        showEventDescription(event);
+                    };
+                    if (!cell.contains(badge)) {
+                        cell.appendChild(badge);
+                    }
+                });
+            });
+        }
+
+        function showEventDescription(event) {
+            const description = document.createElement('div');
+            description.className = 'event-description';
+            description.textContent = `공연명: ${event.name}\n장르: ${event.type}\n날짜: ${event.date}`;
+            const closeButton = document.createElement('button');
+            
+            closeButton.textContent = '닫기';
+            closeButton.onclick = function() {
+                description.style.display = 'none';
+            };
+            description.appendChild(closeButton);
+            const cell = document.querySelector(`td[data-date="${event.date}"]`);
+            cell.appendChild(description);
+            description.style.display = 'block';
+        }
+
+        function toggleEvent(eventId) {
+            const event = events.find(e => e.id === eventId);
+            event.checked = !event.checked;
+            generateCalendar();
+        }
+
+        function deleteEvent(eventId) {
+            events = events.filter(e => e.id !== eventId);
+            updateEventList();
+            generateCalendar();
+        }
+
+        function clearInputs() {
+            document.getElementById('eventType').value = '';
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDate').value = '';
+        }
+
+        function changeMonth(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            generateCalendar();
+        }
+
+        function saveCheckState() {
+            const checkedEvents = events.filter(e => e.checked).map(e => e.id);
+            localStorage.setItem('checkedEvents', JSON.stringify(checkedEvents));
+            alert('저장 완료!');
+        }
+
+        function loadCheckState() {
+            const checkedIds = JSON.parse(localStorage.getItem('checkedEvents')) || [];
+            events.forEach(event => {
+                event.checked = checkedIds.includes(event.id);
+            });
+            updateEventList();
+            generateCalendar();
+            alert('불러오기 완료!');
+        }
+
+        generateCalendar();
+        updateEventList();
+    </script>
+</body>
+</html>
